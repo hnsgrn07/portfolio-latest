@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hans David Geron — Computer Science Student</title>
+<meta name="description" content="Portfolio of Hans David Geron, BS Computer Science student at University of the Cordilleras.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#top" class="nav-mark">HDG</a>
+    <nav class="nav-links">
+      <a href="#work">Work</a>
+      <a href="#about">About</a>
+      <a href="#credentials">Credentials</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a href="#contact" class="nav-cta">Get in touch</a>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="hero-inner">
+      <p class="hero-kicker">BS Computer Science — University of the Cordilleras</p>
+      <h1 class="hero-title">
+        <span class="reveal-line"><span>Hans David</span></span>
+        <span class="reveal-line"><span class="chrome-text">Geron</span></span>
+      </h1>
+      <p class="hero-sub reveal-line"><span>3rd-year CS student in Baguio City, building with Python, Java, and
+      the AWS cloud — currently handling outreach for a student developer guild.</span></p>
+      <div class="hero-actions reveal-line">
+        <span>
+          <a href="#work" class="btn btn-primary"><span>View my work</span></a>
+          <a href="https://github.com/hnsgrn07" target="_blank" rel="noopener" class="btn btn-ghost"><span>GitHub</span></a>
+        </span>
+      </div>
+    </div>
+
+    <div class="hero-orb" id="orb" aria-hidden="true">
+      <div class="orb-core"></div>
+      <div class="orb-ring"></div>
+    </div>
+
+    <div class="hero-scroll" aria-hidden="true">
+      <span></span>
+      <p>Scroll</p>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="section-head reveal">
+      <h2>About</h2>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>I'm a 3rd-year Computer Science student at the University of the Cordilleras, studying under a
+        DOST scholarship. Originally from Pangasinan, I moved to Baguio City for school and have spent the
+        last two years writing code, breaking it, and figuring out why.</p>
+        <p>Outside of coursework, I serve as the <strong>Relations and Communications Officer</strong> for the
+        AWS Student Builder Group – Jaguars, where I handle speaker outreach, member communications, and
+        event coordination for the guild.</p>
+      </div>
+
+      <div class="about-stats reveal">
+        <div class="stat">
+          <p class="stat-num">3<span class="chrome-text">rd</span></p>
+          <p class="stat-label">Year, BS Computer Science</p>
+        </div>
+        <div class="stat">
+          <p class="stat-num">9</p>
+          <p class="stat-label">Certifications &amp; seminars since 2025</p>
+        </div>
+        <div class="stat">
+          <p class="stat-num">2</p>
+          <p class="stat-label">Languages I build in daily — Python &amp; Java</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="skills reveal">
+      <p class="skills-label">Currently working with</p>
+      <ul class="skills-list">
+        <li>Python</li>
+        <li>Java</li>
+        <li>AWS / Cloud Computing</li>
+        <li>Data Structures</li>
+        <li>Web Development</li>
+        <li>Git &amp; GitHub</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- WORK -->
+  <section class="work" id="work">
+    <div class="section-head reveal">
+      <h2>Selected work</h2>
+      <p>A few things I've built, from class projects to guild automation.</p>
+    </div>
+
+    <div class="project-list">
+
+      <article class="project reveal" data-tilt>
+        <div class="project-main">
+          <h3>Solo Leveling RPG</h3>
+          <p>A console-based battle game inspired by the Solo Leveling manhwa, written in Java as a
+          1st-year class project — turn-based combat, leveling, and a text UI built from scratch.</p>
+          <div class="project-tags"><span>Java</span><span>OOP</span><span>CLI</span></div>
+        </div>
+        <a href="https://github.com/hnsgrn07/SoloLevelingRPG-Java" target="_blank" rel="noopener" class="project-link">
+          <span>View repository</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </article>
+
+      <article class="project reveal" data-tilt>
+        <div class="project-main">
+          <h3>Expense Tracker</h3>
+          <p>A command-line expense tracker written in Python. Logs transactions, categorizes spending,
+          and reads back summaries straight from the terminal — no interface overhead, just the data.</p>
+          <div class="project-tags"><span>Python</span><span>CLI</span><span>File I/O</span></div>
+        </div>
+        <a href="https://github.com/hnsgrn07/ExpenseTracker" target="_blank" rel="noopener" class="project-link">
+          <span>View repository</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </article>
+
+      <article class="project reveal" data-tilt>
+        <div class="project-main">
+          <h3>SBG RSVP Automation</h3>
+          <p>An AWS-based automation tool built for the Student Builder Group to handle event RSVPs —
+          part of the guild infrastructure I help run as Relations and Communications Officer.</p>
+          <div class="project-tags"><span>AWS</span><span>Automation</span><span>Cloud</span></div>
+        </div>
+        <a href="https://github.com/hnsgrn07/sbg-rsvp-automation" target="_blank" rel="noopener" class="project-link">
+          <span>View repository</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </article>
+
+      <article class="project reveal" data-tilt>
+        <div class="project-main">
+          <h3>This portfolio</h3>
+          <p>The site you're looking at — built from scratch in HTML, CSS, and vanilla JavaScript.
+          No frameworks, no templates: a chrome-inspired interface designed and coded end to end.</p>
+          <div class="project-tags"><span>HTML/CSS</span><span>JavaScript</span><span>Design</span></div>
+        </div>
+        <span class="project-link project-link-static">
+          <span>You're on it</span>
+        </span>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- CREDENTIALS -->
+  <section class="credentials" id="credentials">
+    <div class="section-head reveal">
+      <h2>Credentials</h2>
+      <p>Certifications and coursework completed alongside my degree.</p>
+    </div>
+
+    <div class="cred-list reveal">
+      <div class="cred-row">
+        <p class="cred-name">Python Developer Associate</p>
+        <p class="cred-issuer">DataCamp</p>
+        <p class="cred-date">Sep 2026</p>
+      </div>
+      <div class="cred-row">
+        <p class="cred-name">Introduction to Python</p>
+        <p class="cred-issuer">DataCamp</p>
+        <p class="cred-date">Sep 2026</p>
+      </div>
+      <div class="cred-row">
+        <p class="cred-name">Introduction to Cloud 101</p>
+        <p class="cred-issuer">AWS Educate</p>
+        <p class="cred-date">May 2026</p>
+      </div>
+      <div class="cred-row">
+        <p class="cred-name">AI Fundamentals with IBM SkillsBuild</p>
+        <p class="cred-issuer">Cisco</p>
+        <p class="cred-date">May 2026</p>
+      </div>
+      <div class="cred-row">
+        <p class="cred-name">Practical App Development: Concept to Code to Reality</p>
+        <p class="cred-issuer">University of the Cordilleras — CITCS</p>
+        <p class="cred-date">Mar 2026</p>
+      </div>
+      <div class="cred-row">
+        <p class="cred-name">AI &amp; Machine Learning — Powering Intelligent Systems</p>
+        <p class="cred-issuer">University of the Cordilleras — CITCS</p>
+        <p class="cred-date">Mar 2026</p>
+      </div>
+      <div class="cred-row">
+        <p class="cred-name">Introduction to Modern AI</p>
+        <p class="cred-issuer">Cisco</p>
+        <p class="cred-date">Jan 2026</p>
+      </div>
+      <div class="cred-row">
+        <p class="cred-name">Cultural Intelligence and Adaptation: Thriving in a Globalized World</p>
+        <p class="cred-issuer">University of the Cordilleras</p>
+        <p class="cred-date">Mar 2025</p>
+      </div>
+      <div class="cred-row">
+        <p class="cred-name">Scholars' Values Formation Orientation</p>
+        <p class="cred-issuer">DOST — Science Education Institute</p>
+        <p class="cred-date">Feb 2025</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <div class="contact-inner reveal">
+      <h2>Let's talk.</h2>
+      <p>Open to internships, junior roles, and anything that lets me build something real.</p>
+      <a href="mailto:hansdavidgeron07@gmail.com" class="contact-email chrome-text">hansdavidgeron07@gmail.com</a>
+      <div class="contact-links">
+        <a href="https://github.com/hnsgrn07" target="_blank" rel="noopener">GitHub ↗</a>
+        <a href="https://linkedin.com/in/hansgeron" target="_blank" rel="noopener">LinkedIn ↗</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Hans David Geron © 2026</p>
+  <p>Built with HTML, CSS &amp; JavaScript</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
