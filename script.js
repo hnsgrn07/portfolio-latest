@@ -217,6 +217,145 @@ if (deck) {
 }
 
 // ============================================================
+// 4b. Certificates — a small view button per credential row.
+//     Hover (or focus) shows a floating preview above the row;
+//     click opens a lightbox. Missing images fall back to a
+//     placeholder certificate card built from the row's text.
+//     The preview lives inside the section so the lens mirrors it.
+// ============================================================
+const credRows = [...document.querySelectorAll('.cred-row[data-cert]')];
+if (credRows.length) {
+  const credWrap = document.querySelector('#credentials .wrap');
+  const navH = () => nav.getBoundingClientRect().height;
+  const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const info = row => ({
+    src: row.dataset.cert,
+    name: row.querySelector('.cred-name').textContent.trim(),
+    issuer: row.querySelector('.cred-issuer').textContent.trim(),
+    date: row.querySelector('.cred-date').textContent.trim(),
+    link: row.dataset.link || '',
+    credId: row.dataset.credId || '',
+  });
+
+  // remember which image files exist, and their shape
+  const status = new Map();
+  const probe = src => status.has(src) ? Promise.resolve(status.get(src)) : new Promise(res => {
+    const im = new Image();
+    im.onload = () => {
+      const v = { ok: true, ratio: `${im.naturalWidth} / ${im.naturalHeight}`, small: im.naturalWidth < 700 };
+      status.set(src, v);
+      res(v);
+    };
+    im.onerror = () => { const v = { ok: false }; status.set(src, v); res(v); };
+    im.src = src;
+  });
+
+  const placeholder = d => `
+    <div class="cert-ph">
+      <span class="cert-ph-kicker">Certificate</span>
+      <span class="cert-ph-name">${esc(d.name)}</span>
+      <span class="cert-ph-meta">${esc(d.issuer)} · ${esc(d.date)}</span>
+      <span class="cert-ph-seal"></span>
+    </div>`;
+  const visual = async d => {
+    const p = await probe(d.src);
+    if (!p.ok) return placeholder(d);
+    const img = `<img src="${esc(d.src)}" alt="Certificate: ${esc(d.name)}" style="aspect-ratio:${p.ratio}">`;
+    // small badge images sit centred at their own size instead of being stretched
+    return p.small ? `<div class="cert-badge">${img}</div>` : img;
+  };
+
+  // --- floating preview
+  const preview = document.createElement('div');
+  preview.className = 'cert-preview';
+  preview.setAttribute('aria-hidden', 'true');
+  credWrap.appendChild(preview);
+  let previewFor = null;
+
+  async function showPreview(row) {
+    previewFor = row;
+    const html = await visual(info(row));
+    if (previewFor !== row) return;
+    preview.innerHTML = html;
+
+    const wr = credWrap.getBoundingClientRect();
+    const rr = row.getBoundingClientRect();
+    const br = row.querySelector('.cred-view').getBoundingClientRect();
+    const h = preview.offsetHeight;
+    const above = rr.top - h - 12 > navH() + 8;
+    preview.style.left = `${Math.max(0, br.right - wr.left - preview.offsetWidth)}px`;
+    preview.style.top = `${above ? rr.top - wr.top - h - 12 : rr.bottom - wr.top + 12}px`;
+    preview.classList.add('is-visible');
+  }
+  function hidePreview() {
+    previewFor = null;
+    preview.classList.remove('is-visible');
+  }
+
+  // --- lightbox
+  const dialog = document.createElement('dialog');
+  dialog.className = 'cert-dialog';
+  dialog.innerHTML = `
+    <div class="cert-dialog-media"></div>
+    <div class="cert-dialog-bar">
+      <div class="cert-dialog-text">
+        <p class="cert-dialog-name"></p>
+        <p class="cert-dialog-meta"></p>
+      </div>
+      <p class="cert-dialog-id"></p>
+      <a class="pill cert-dialog-link" target="_blank" rel="noopener">View credential <span aria-hidden="true">↗</span></a>
+      <button class="cert-dialog-close" type="button" aria-label="Close certificate">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>`;
+  document.body.appendChild(dialog);
+  const dMedia = dialog.querySelector('.cert-dialog-media');
+
+  async function openCert(row) {
+    const d = info(row);
+    hidePreview();
+    dMedia.innerHTML = await visual(d);
+    dialog.querySelector('.cert-dialog-name').textContent = d.name;
+    dialog.querySelector('.cert-dialog-meta').textContent = `${d.issuer} · ${d.date}`;
+    const idEl = dialog.querySelector('.cert-dialog-id');
+    idEl.textContent = d.credId ? `Credential ID ${d.credId}` : '';
+    idEl.hidden = !d.credId;
+    const linkEl = dialog.querySelector('.cert-dialog-link');
+    linkEl.hidden = !d.link;
+    if (d.link) {
+      linkEl.href = d.link;
+      linkEl.setAttribute('aria-label', `View the ${d.name} credential (opens in a new tab)`);
+    } else {
+      linkEl.removeAttribute('href');
+    }
+    dialog.setAttribute('aria-label', `Certificate: ${d.name}`);
+    root.classList.add('lens-off');          // give the normal cursor back
+    dialog.showModal();
+  }
+  dialog.querySelector('.cert-dialog-close').addEventListener('click', () => dialog.close());
+  dialog.addEventListener('click', e => { if (e.target === dialog) dialog.close(); });
+  dialog.addEventListener('close', () => root.classList.remove('lens-off'));
+
+  credRows.forEach(row => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'cred-view';
+    btn.setAttribute('aria-label', `View certificate: ${info(row).name}`);
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="1.75" y="3" width="12.5" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M2.5 11.5l3.5-3.5 2.5 2.5 2-2 3 3" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><circle cx="10.75" cy="6" r="1" fill="currentColor"/></svg>';
+    row.appendChild(btn);
+
+    row.addEventListener('click', () => openCert(row));
+    btn.addEventListener('focus', () => showPreview(row));
+    btn.addEventListener('blur', hidePreview);
+    if (finePointer) {
+      row.addEventListener('mouseenter', () => showPreview(row));
+      row.addEventListener('mouseleave', hidePreview);
+    }
+  });
+  window.addEventListener('scroll', () => { if (previewFor && !previewFor.matches(':hover')) hidePreview(); }, { passive: true });
+}
+
+// ============================================================
 // 5. Glass lens cursor — magnifies the whole page.
 //    The nav, main and footer are cloned once into a fixed layer
 //    clipped to a circle at the pointer and scaled around it.
@@ -314,7 +453,7 @@ if (finePointer) {
   document.addEventListener('mouseover', (e) => {
     small = !!e.target.closest('a, button, [tabindex]:not(#deck), .skills-list li');
     ring.classList.toggle('is-small', small);
-    const h = e.target.closest('.portrait, .swatch, .cred-row, .skills-list li');
+    const h = e.target.closest('.portrait, .swatch, .edu-row, .cred-row, .skills-list li');
     if (h !== hovered) {
       if (hovered) hovered.classList.remove('is-hover');
       if (h) h.classList.add('is-hover');

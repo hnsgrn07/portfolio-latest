@@ -52,6 +52,7 @@
       <nav class="nav-links" aria-label="Primary">
         <a href="#about">About me</a>
         <a href="#work">Work</a>
+        <a href="#education">Education</a>
         <a href="#credentials">Credentials</a>
         <a href="#contact">Contact</a>
       </nav>
@@ -314,6 +315,49 @@ Total           <span class="t-hi">2,270.00</span><span class="caret"></span></p
     </div>
   </section>
 
+  <!-- ============ EDUCATION ============ -->
+  <section class="education" id="education">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="display">Education</h2>
+        <p>Where I've studied, and the honors earned along the way.</p>
+      </div>
+
+      <ol class="edu-list">
+        <li class="edu-row">
+          <p class="edu-years">2024 — Present</p>
+          <div class="edu-main">
+            <h3 class="edu-school">University of the Cordilleras</h3>
+            <p class="edu-program">BS Computer Science · Baguio City</p>
+          </div>
+          <ul class="edu-honors">
+            <li>
+              <span class="honor-name">Dean's Lister</span>
+              <span class="honor-when">1st year — 1st &amp; 2nd term · 2nd year — 3rd term</span>
+            </li>
+            <li>
+              <span class="honor-name">DOST-SEI Scholar</span>
+              <span class="honor-when">1st–3rd trimester, AY 2024–2025 &amp; AY 2025–2026</span>
+            </li>
+          </ul>
+        </li>
+
+        <li class="edu-row">
+          <p class="edu-years">2022 — 2024</p>
+          <div class="edu-main">
+            <h3 class="edu-school">PHINMA UPang College Urdaneta</h3>
+            <p class="edu-program">Senior High School · STEM Strand</p>
+          </div>
+          <ul class="edu-honors">
+            <li>
+              <span class="honor-name">Graduated with Honors</span>
+            </li>
+          </ul>
+        </li>
+      </ol>
+    </div>
+  </section>
+
   <!-- ============ CREDENTIALS ============ -->
   <section class="credentials" id="credentials">
     <div class="wrap">
@@ -322,16 +366,20 @@ Total           <span class="t-hi">2,270.00</span><span class="caret"></span></p
         <p>Certifications and coursework completed alongside my degree.</p>
       </div>
 
+      <!-- Certificates: images live in assets/certificates/ (named as in each
+           row's data-cert; a placeholder card shows until a file exists).
+           data-link adds a "View credential" button to the lightbox;
+           data-cred-id shows a credential ID when there's no public link. -->
       <ol class="cred-list">
-        <li class="cred-row"><span class="cred-name">Python Developer Associate</span><span class="cred-issuer">DataCamp</span><span class="cred-date">Sep 2026</span></li>
-        <li class="cred-row"><span class="cred-name">Introduction to Python</span><span class="cred-issuer">DataCamp</span><span class="cred-date">Sep 2026</span></li>
-        <li class="cred-row"><span class="cred-name">AWS Educate Introduction to Cloud 101</span><span class="cred-issuer">Amazon Web Services</span><span class="cred-date">May 2026</span></li>
-        <li class="cred-row"><span class="cred-name">AI Fundamentals with IBM SkillsBuild</span><span class="cred-issuer">Cisco</span><span class="cred-date">May 2026</span></li>
-        <li class="cred-row"><span class="cred-name">Practical App Development: Concept to Code to Reality</span><span class="cred-issuer">University of the Cordilleras — CITCS</span><span class="cred-date">Mar 2026</span></li>
-        <li class="cred-row"><span class="cred-name">AI &amp; Machine Learning — Powering Intelligent Systems</span><span class="cred-issuer">University of the Cordilleras — CITCS</span><span class="cred-date">Mar 2026</span></li>
-        <li class="cred-row"><span class="cred-name">Introduction to Modern AI</span><span class="cred-issuer">Cisco</span><span class="cred-date">Jan 2026</span></li>
-        <li class="cred-row"><span class="cred-name">Cultural Intelligence and Adaptation: Thriving in a Globalized World</span><span class="cred-issuer">University of the Cordilleras</span><span class="cred-date">Mar 2025</span></li>
-        <li class="cred-row"><span class="cred-name">Scholars' Values Formation Orientation</span><span class="cred-issuer">DOST — Science Education Institute</span><span class="cred-date">Feb 2025</span></li>
+        <li class="cred-row" data-cert="assets/certificates/python-developer-associate.jpg" data-link="https://www.datacamp.com/certificate/PDEVA0012545956895"><span class="cred-name">Python Developer Associate</span><span class="cred-issuer">DataCamp</span><span class="cred-date">Sep 2026</span></li>
+        <li class="cred-row" data-cert="assets/certificates/introduction-to-python.jpg" data-cred-id="ITP0017545764524"><span class="cred-name">Introduction to Python</span><span class="cred-issuer">DataCamp</span><span class="cred-date">Sep 2026</span></li>
+        <li class="cred-row" data-cert="assets/certificates/aws-educate-cloud-101.png" data-link="https://www.credly.com/badges/25e62fdd-0d37-46b5-a300-b404b76b7695"><span class="cred-name">AWS Educate Introduction to Cloud 101</span><span class="cred-issuer">Amazon Web Services</span><span class="cred-date">May 2026</span></li>
+        <li class="cred-row" data-cert="assets/certificates/ai-fundamentals-ibm-skillsbuild.png" data-link="https://www.credly.com/badges/6638e16f-08d2-4c34-b93c-08ae93bb9e47"><span class="cred-name">AI Fundamentals with IBM SkillsBuild</span><span class="cred-issuer">Cisco</span><span class="cred-date">May 2026</span></li>
+        <li class="cred-row" data-cert="assets/certificates/practical-app-development.jpg"><span class="cred-name">Practical App Development: Concept to Code to Reality</span><span class="cred-issuer">University of the Cordilleras — CITCS</span><span class="cred-date">Mar 2026</span></li>
+        <li class="cred-row" data-cert="assets/certificates/ai-machine-learning-intelligent-systems.jpg"><span class="cred-name">AI &amp; Machine Learning — Powering Intelligent Systems</span><span class="cred-issuer">University of the Cordilleras — CITCS</span><span class="cred-date">Mar 2026</span></li>
+        <li class="cred-row" data-cert="assets/certificates/introduction-to-modern-ai.png" data-link="https://www.credly.com/badges/2d4604a1-74c6-4a60-9324-8fe16cbf4912"><span class="cred-name">Introduction to Modern AI</span><span class="cred-issuer">Cisco</span><span class="cred-date">Jan 2026</span></li>
+        <li class="cred-row" data-cert="assets/certificates/cultural-intelligence-adaptation.jpg"><span class="cred-name">Cultural Intelligence and Adaptation: Thriving in a Globalized World</span><span class="cred-issuer">University of the Cordilleras</span><span class="cred-date">Mar 2025</span></li>
+        <li class="cred-row" data-cert="assets/certificates/scholars-values-formation.jpg"><span class="cred-name">Scholars' Values Formation Orientation</span><span class="cred-issuer">DOST — Science Education Institute</span><span class="cred-date">Feb 2025</span></li>
       </ol>
     </div>
   </section>
