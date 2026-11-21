@@ -997,6 +997,31 @@ section { position: relative; }
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
+.edu-main {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-width: 0;
+}
+/* school seals sit straight on the page, no tile */
+.edu-logo {
+  flex: none;
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  transition: transform .45s var(--ease);
+}
+/* a faint light edge so the dark-green seals don't sink into the dark ground */
+:root[data-theme="dark"] .edu-logo img {
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, .55)) drop-shadow(0 0 6px rgba(255, 255, 255, .12));
+}
+.edu-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.edu-row:is(:hover, .is-hover) .edu-logo { transform: translateY(-2px); }
 .edu-school {
   font-size: clamp(22px, 2.1vw, 30px);
   font-weight: 400;
@@ -1049,7 +1074,7 @@ section { position: relative; }
 .cred-list { border-top: 1px solid var(--line); }
 .cred-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 300px) 90px 44px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 300px) 90px 64px;
   gap: 24px;
   align-items: center;
   cursor: pointer;
@@ -1077,26 +1102,39 @@ section { position: relative; }
   font-variant-numeric: tabular-nums;
 }
 
-/* small "view certificate" control at the end of each row */
+/* issuer logo at the end of each row: it is the "view certificate" button */
 .cred-view {
-  width: 44px;
+  width: 64px;
   height: 44px;
-  border-radius: 50%;
-  border: 1px solid var(--line);
+  padding: 4px;
+  border: 0;
+  border-radius: 8px;
   background: transparent;
   display: grid;
   place-items: center;
   color: var(--muted);
   cursor: pointer;
-  transition: background-color .3s, color .3s, border-color .3s, transform .2s var(--ease);
+  transition: transform .35s var(--ease), opacity .3s;
 }
-.cred-row:is(:hover, .is-hover) .cred-view,
-.cred-view:focus-visible {
-  border-color: var(--ink);
-  color: var(--ink);
+.cred-view img {
+  grid-area: 1 / 1;
+  max-width: 56px;
+  max-height: 32px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  transition: filter .35s var(--ease);
 }
-.cred-view:hover { background: var(--ink); color: var(--bg); }
-.cred-view:active { transform: scale(.93); }
+.cred-view img[src*="datacamp"] { border-radius: 7px; }
+.cred-view .logo-dark { display: none; }
+:root[data-theme="dark"] .cred-view.has-dark .logo-light { display: none; }
+:root[data-theme="dark"] .cred-view.has-dark .logo-dark { display: block; }
+/* same faint light edge the school seals get, so dark marks hold up on navy */
+:root[data-theme="dark"] .cred-view img {
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, .5)) drop-shadow(0 0 5px rgba(255, 255, 255, .1));
+}
+.cred-row:is(:hover, .is-hover) .cred-view { transform: scale(1.08); }
+.cred-view:active { transform: scale(.94); }
 
 /* hover / focus preview, floated above the row */
 .credentials .wrap { position: relative; }
@@ -1469,12 +1507,14 @@ section { position: relative; }
     padding: 28px 0;
   }
   .edu-years { padding-top: 0; }
+  .edu-logo { width: 52px; height: 52px; }
+  .edu-main { gap: 14px; }
 
   .cert-dialog-bar { flex-wrap: wrap; }
   .cert-dialog-text { flex-basis: calc(100% - 60px); }
 
   .cred-row {
-    grid-template-columns: minmax(0, 1fr) auto 44px;
+    grid-template-columns: minmax(0, 1fr) auto 64px;
     gap: 4px 16px;
   }
   .cred-name { grid-column: 1 / -1; }

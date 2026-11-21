@@ -340,8 +340,14 @@ if (credRows.length) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'cred-view';
-    btn.setAttribute('aria-label', `View certificate: ${info(row).name}`);
-    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="1.75" y="3" width="12.5" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M2.5 11.5l3.5-3.5 2.5 2.5 2-2 3 3" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><circle cx="10.75" cy="6" r="1" fill="currentColor"/></svg>';
+    btn.setAttribute('aria-label', `View certificate: ${info(row).name} (${info(row).issuer})`);
+    // the issuer's logo is the button; a dark-mode variant swaps in when given
+    const { logo, logoDark } = row.dataset;
+    btn.innerHTML = logo
+      ? `<img class="logo-light" src="${esc(logo)}" alt="" loading="lazy">` +
+        (logoDark ? `<img class="logo-dark" src="${esc(logoDark)}" alt="" loading="lazy">` : '')
+      : '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="1.75" y="3" width="12.5" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M2.5 11.5l3.5-3.5 2.5 2.5 2-2 3 3" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><circle cx="10.75" cy="6" r="1" fill="currentColor"/></svg>';
+    if (logoDark) btn.classList.add('has-dark');
     row.appendChild(btn);
 
     row.addEventListener('click', () => openCert(row));
