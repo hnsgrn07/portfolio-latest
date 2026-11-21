@@ -12,15 +12,21 @@
   --line: rgba(34, 34, 34, 0.12);
   --ghost: rgba(34, 34, 34, 0.035);
 
+  /* one restrained accent: a nod to the Spider-Man red/blue */
+  --accent: #D3263A;
+  --fringe-a: #E8233F;
+  --fringe-b: #1E7BFF;
+  --outline: rgba(34, 34, 34, 0.22);
+
   --card: #1E1E1E;
   --card-ink: #F4F4F4;
   --card-muted: #8F8F8F;
   --card-line: rgba(255, 255, 255, 0.1);
   --card-visual: #141414;
 
-  --blob-1: rgba(168, 178, 196, 0.45);
-  --blob-2: rgba(214, 204, 190, 0.5);
-  --blob-3: rgba(190, 196, 204, 0.4);
+  --blob-1: rgba(150, 165, 212, 0.42);
+  --blob-2: rgba(232, 188, 190, 0.34);
+  --blob-3: rgba(188, 196, 214, 0.4);
 
   --lens-edge: rgba(255, 255, 255, 0.85);
   --lens-shade: rgba(34, 34, 34, 0.1);
@@ -46,13 +52,18 @@
   --line: rgba(255, 255, 255, 0.1);
   --ghost: rgba(255, 255, 255, 0.03);
 
+  --accent: #FF4A5E;
+  --fringe-a: #FF2E4D;
+  --fringe-b: #2FB8FF;
+  --outline: rgba(255, 255, 255, 0.2);
+
   --card: #151821;
   --card-line: rgba(255, 255, 255, 0.08);
   --card-visual: #0D0F15;
 
-  --blob-1: rgba(38, 78, 150, 0.55);
-  --blob-2: rgba(20, 52, 104, 0.6);
-  --blob-3: rgba(52, 96, 170, 0.35);
+  --blob-1: rgba(43, 64, 160, 0.55);
+  --blob-2: rgba(24, 40, 110, 0.6);
+  --blob-3: rgba(190, 28, 48, 0.2);
 
   --lens-edge: rgba(255, 255, 255, 0.28);
   --lens-shade: rgba(0, 0, 0, 0.35);
@@ -92,7 +103,10 @@ button { font: inherit; color: inherit; }
   font-style: italic;
   font-weight: 400;
   letter-spacing: 0;
+  color: var(--accent);
 }
+
+::selection { background: var(--accent); color: #FFFFFF; }
 
 .wrap {
   width: 100%;
@@ -307,7 +321,6 @@ a:hover .arrow { transform: translate(2px, -2px); }
    HERO
    ============================================================ */
 .hero {
-  --p: 0;
   position: relative;
   min-height: 100svh;
   display: flex;
@@ -316,17 +329,42 @@ a:hover .arrow { transform: translate(2px, -2px); }
   overflow: hidden;
 }
 
+/* Outlined name ticker, behind the copy and the cut-out */
+.hero-marquee {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(24px, 6vh, 64px);
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 48s linear infinite;
+}
+.marquee-track span {
+  padding-right: .35em;
+  font-size: clamp(110px, 15vw, 240px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--outline);
+}
+@keyframes marquee { to { transform: translateX(-50%); } }
+
 .hero-grid {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: 40px minmax(0, 1fr) minmax(300px, 0.82fr);
   column-gap: clamp(24px, 4vw, 64px);
   align-items: stretch;
-  /* the whole hero zooms and blurs away as you scroll, like the ref */
-  transform-origin: 40% 45%;
-  transform: scale(calc(1 + var(--p) * 0.14));
-  filter: blur(calc(var(--p) * 10px));
-  opacity: calc(1 - var(--p) * 1.15);
-  will-change: transform, filter, opacity;
 }
 
 .rail {
@@ -370,6 +408,7 @@ a:hover .arrow { transform: translate(2px, -2px); }
   line-height: 1;
 }
 .stat-num sup {
+  color: var(--accent);
   font-size: .5em;
   vertical-align: top;
   position: relative;
@@ -421,26 +460,24 @@ a:hover .arrow { transform: translate(2px, -2px); }
   30% { transform: translateY(4px); }
 }
 
+/* background removed: the cut-out stands on the page like the ref */
 .portrait {
   position: relative;
   align-self: end;
-  height: min(calc(100svh - var(--nav-h) - 48px), 760px);
-  margin-bottom: 24px;
-  border-radius: 28px;
-  overflow: hidden;
-  background: #2b2b2b;
+  height: min(calc(100svh - var(--nav-h) - 24px), 820px);
 }
 .portrait img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: 50% 18%;
-  filter: grayscale(1) contrast(1.08) brightness(1.04);
+  object-fit: contain;
+  object-position: 50% 100%;
+  filter: grayscale(1) contrast(1.06);
+  transform-origin: 50% 100%;
   transition: filter .9s var(--ease), transform 1.2s var(--ease);
 }
-.portrait:hover img {
-  filter: grayscale(0) contrast(1) brightness(1);
-  transform: scale(1.025);
+.portrait:is(:hover, .is-hover) img {
+  filter: grayscale(0) contrast(1);
+  transform: scale(1.02);
 }
 .portrait-fallback {
   display: none;
@@ -453,25 +490,6 @@ a:hover .arrow { transform: translate(2px, -2px); }
 }
 .portrait.no-photo img { display: none; }
 .portrait.no-photo .portrait-fallback { display: grid; }
-
-/* ============================================================
-   BLUR-IN HEADINGS — words resolve out of blur, once
-   ============================================================ */
-[data-blur] .w {
-  display: inline-block;
-  opacity: 0;
-  filter: blur(12px);
-  transform: translateY(.25em) scale(1.04);
-  transition:
-    opacity .9s var(--ease) calc(var(--i) * 70ms),
-    filter .9s var(--ease) calc(var(--i) * 70ms),
-    transform 1s var(--ease) calc(var(--i) * 70ms);
-}
-[data-blur].in .w {
-  opacity: 1;
-  filter: blur(0);
-  transform: none;
-}
 
 /* ============================================================
    SECTION BASICS
@@ -564,7 +582,7 @@ section { position: relative; }
   justify-content: flex-end;
   transition: transform .45s var(--ease), box-shadow .45s var(--ease);
 }
-.swatch:hover {
+.swatch:is(:hover, .is-hover) {
   transform: translateY(-2px);
   box-shadow: 0 18px 40px -24px rgba(0, 0, 0, .35);
 }
@@ -617,7 +635,7 @@ section { position: relative; }
   font-size: 14px;
   transition: background-color .3s, color .3s, border-color .3s;
 }
-.skills-list li:hover {
+.skills-list li:is(:hover, .is-hover) {
   background: var(--ink);
   color: var(--bg);
   border-color: var(--ink);
@@ -684,7 +702,7 @@ section { position: relative; }
   min-width: 64px;
   text-align: center;
 }
-#deck-current { color: var(--ink); }
+.deck-count span:first-child { color: var(--ink); }
 
 .deck-wrap { min-width: 0; }
 
@@ -947,8 +965,8 @@ section { position: relative; }
 }
 .deck-dots button:hover::before { transform: scale(1.3); }
 .deck-dots button[aria-current="true"]::before {
-  background: var(--ink);
-  border-color: var(--ink);
+  background: var(--accent);
+  border-color: var(--accent);
 }
 
 /* ============================================================
@@ -968,7 +986,7 @@ section { position: relative; }
   border-bottom: 1px solid var(--line);
   transition: padding .45s var(--ease), background-color .35s;
 }
-.cred-row:hover {
+.cred-row:is(:hover, .is-hover) {
   padding-left: 14px;
   padding-right: 14px;
   background: var(--surface);
@@ -1114,7 +1132,7 @@ section { position: relative; }
   height: 4px;
   margin: -2px 0 0 -2px;
   border-radius: 50%;
-  background: var(--ink);
+  background: var(--accent);
   pointer-events: none;
   opacity: 0;
   transition: opacity .3s;
@@ -1128,23 +1146,36 @@ section { position: relative; }
   pointer-events: none;
   clip-path: circle(0px at -200px -200px);
 }
-.lens-clone {
-  position: absolute !important;
-  margin: 0 !important;
-  color: var(--ink);
-  text-shadow:
-    2.5px 0 0 rgba(255, 40, 90, .55),
-    -2.5px 0 0 rgba(0, 175, 255, .55);
-  will-change: transform;
+.lens-shift {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
 }
-.lens-clone *,
-.lens-clone [data-enter],
-.lens-clone .w {
-  opacity: 1 !important;
-  filter: none !important;
-  transform: none !important;
+.lens-zoom {
+  text-shadow:
+    2.5px 0 0 color-mix(in srgb, var(--fringe-a) 55%, transparent),
+    -2.5px 0 0 color-mix(in srgb, var(--fringe-b) 55%, transparent);
+}
+.lens-zoom-nav {
+  position: absolute;
+  inset: 0;
+}
+
+/* ============================================================
+   THEME WIPE — the new theme spreads from the toggle as a circle
+   (View Transitions API; plain swap where it isn't supported)
+   ============================================================ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) { z-index: 2; }
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
   transition: none !important;
-  animation: none !important;
 }
 
 /* ============================================================
@@ -1169,12 +1200,13 @@ section { position: relative; }
   .rail { display: none; }
   .hero-copy { padding: 40px 0 32px; }
   .scroll-down { display: none; }
+  .hero-grid { padding-bottom: 0; }
+  .hero-marquee { bottom: 18svh; }
   .portrait {
     height: auto;
-    aspect-ratio: 4 / 5;
-    max-height: 70svh;
-    margin-bottom: 0;
-    border-radius: 22px;
+    aspect-ratio: 708 / 980;
+    max-height: 64svh;
+    width: 100%;
   }
 
   .section-head,
@@ -1221,12 +1253,10 @@ section { position: relative; }
     transition-duration: .01ms !important;
     transition-delay: 0s !important;
   }
-  [data-enter],
-  [data-blur] .w {
+  [data-enter] {
     opacity: 1 !important;
     filter: none !important;
     transform: none !important;
   }
-  .hero-grid { transform: none !important; filter: none !important; opacity: 1 !important; }
   .lens-ring { transition: opacity .2s, width .2s, height .2s, margin .2s !important; }
 }

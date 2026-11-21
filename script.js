@@ -4,6 +4,7 @@
 const root = document.documentElement;
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+const clamp01 = v => Math.min(Math.max(v, 0), 1);
 
 // ============================================================
 // 0. Theme toggle — initial theme is set pre-paint in <head>
@@ -14,15 +15,43 @@ const syncThemeMeta = () => {
 };
 syncThemeMeta();
 
-document.getElementById('theme-toggle').addEventListener('click', () => {
+// The new theme spreads out from the toggle as a growing circle.
+const themeToggle = document.getElementById('theme-toggle');
+let switching = false;
+
+themeToggle.addEventListener('click', () => {
+  if (switching) return;
   const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-  root.dataset.theme = next;
-  syncThemeMeta();
-  try { localStorage.setItem('theme', next); } catch (e) { /* storage blocked: theme just won't persist */ }
+  const apply = () => {
+    root.dataset.theme = next;
+    syncThemeMeta();
+    try { localStorage.setItem('theme', next); } catch (e) { /* storage blocked: theme just won't persist */ }
+  };
+
+  if (!document.startViewTransition || reduceMotion) { apply(); return; }
+
+  const r = themeToggle.getBoundingClientRect();
+  const x = r.left + r.width / 2;
+  const y = r.top + r.height / 2;
+  const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+
+  switching = true;
+  root.classList.add('theme-switching');           // no colour fades inside the wipe
+  const vt = document.startViewTransition(apply);
+  vt.ready.then(() => {
+    root.animate(
+      { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+      { duration: 750, easing: 'cubic-bezier(0.7, 0, 0.2, 1)', pseudoElement: '::view-transition-new(root)' }
+    );
+  });
+  vt.finished.finally(() => {
+    root.classList.remove('theme-switching');
+    switching = false;
+  });
 });
 
 // ============================================================
-// 1. Hero entrance (once) + stat count-up
+// 2. Hero entrance (once) + stat count-up
 // ============================================================
 requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add('is-loaded')));
 
@@ -33,9 +62,8 @@ if (!reduceMotion) {
     const dur = 1300;
     el.textContent = '0';
     const tick = (now) => {
-      const t = Math.min(Math.max((now - start) / dur, 0), 1);
-      const eased = 1 - Math.pow(1 - t, 3);
-      el.textContent = Math.round(target * eased);
+      const t = clamp01((now - start) / dur);
+      el.textContent = Math.round(target * (1 - Math.pow(1 - t, 3)));
       if (t < 1) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
@@ -43,172 +71,55 @@ if (!reduceMotion) {
 }
 
 // ============================================================
-// 2. Nav background + hero zoom/blur-out on scroll
+// 3. Section transitions — the same for every section.
+//    Entering from below: content resolves out of a blur and
+//    settles from 96.5% scale. Leaving at the top: it zooms
+//    slightly, blurs and fades, like the hero in the reference.
 // ============================================================
 const nav = document.getElementById('nav');
-const hero = document.querySelector('.hero');
-let heroP = 0;
+const scenes = [...document.querySelectorAll('main > section')].map(sec => ({
+  sec,
+  els: [...sec.querySelectorAll(':scope > .wrap, :scope > .hero-marquee')],
+}));
 
-function onScroll() {
-  const y = window.scrollY;
-  nav.classList.toggle('scrolled', y > 24);
-  if (!reduceMotion) {
-    heroP = Math.min(Math.max(y / (hero.offsetHeight * 0.85), 0), 1);
-    hero.style.setProperty('--p', heroP.toFixed(4));
-  }
-}
-window.addEventListener('scroll', onScroll, { passive: true });
-onScroll();
+let ticking = false;
+function updateScenes() {
+  ticking = false;
+  const vh = window.innerHeight;
+  nav.classList.toggle('scrolled', window.scrollY > 24);
+  if (reduceMotion) return;
 
-// ============================================================
-// 3. Blur-in headings — split words, resolve once in view
-// ============================================================
-function splitWords(el) {
-  let i = 0;
-  const walk = (node) => {
-    [...node.childNodes].forEach(child => {
-      if (child.nodeType === Node.TEXT_NODE) {
-        const frag = document.createDocumentFragment();
-        child.textContent.split(/(\s+)/).forEach(part => {
-          if (!part) return;
-          if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
-          const span = document.createElement('span');
-          span.className = 'w';
-          span.style.setProperty('--i', i++);
-          span.textContent = part;
-          frag.appendChild(span);
-        });
-        child.replaceWith(frag);
-      } else if (child.nodeType === Node.ELEMENT_NODE) {
-        walk(child);
+  scenes.forEach(s => {
+    const r = s.sec.getBoundingClientRect();
+    if (r.bottom < -vh || r.top > vh * 2) return;           // far off screen
+
+    const enter = clamp01((vh - r.top) / (vh * 0.45));     // 0 below fold → 1 settled
+    const exit = clamp01((vh * 0.6 - r.bottom) / (vh * 0.6)); // 0 on screen → 1 gone
+    const settled = enter >= 1 && exit <= 0;
+    const scale = 0.965 + 0.035 * enter + 0.08 * exit;
+    const blur = (1 - enter) * 10 + exit * 10;
+
+    s.els.forEach(el => {
+      const st = el.style;
+      if (settled) {
+        if (st.transform) { st.transform = ''; st.filter = ''; st.opacity = ''; }
+        return;
       }
+      st.transformOrigin = exit > 0 ? '50% 100%' : '50% 0%';
+      st.transform = `scale(${scale.toFixed(4)})`;
+      st.filter = `blur(${blur.toFixed(2)}px)`;
+      st.opacity = Math.max(0, enter - exit * 1.15).toFixed(3);
     });
-  };
-  walk(el);
+  });
 }
-
-const blurEls = document.querySelectorAll('[data-blur]');
-blurEls.forEach(splitWords);
-
-if (reduceMotion || !('IntersectionObserver' in window)) {
-  blurEls.forEach(el => el.classList.add('in'));
-} else {
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('in');
-        io.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.35 });
-  blurEls.forEach(el => io.observe(el));
-}
+window.addEventListener('scroll', () => {
+  if (!ticking) { ticking = true; requestAnimationFrame(updateScenes); }
+}, { passive: true });
+window.addEventListener('resize', updateScenes);
+updateScenes();
 
 // ============================================================
-// 4. Glass lens cursor
-//    A circle follows the pointer with a little lag. Big type marked
-//    [data-lens] is cloned into a fixed layer that is clipped to the
-//    circle and scaled around the pointer, with red/cyan fringes,
-//    so the lens reads as real glass magnifying the headline.
-//    It only moves with the pointer, so it stays on under reduced
-//    motion — just without the trailing lag.
-// ============================================================
-if (finePointer) {
-  const R = 60;          // lens radius in px
-  const ZOOM = 1.2;
-
-  const ring = document.createElement('div');
-  ring.className = 'lens-ring';
-  const dot = document.createElement('div');
-  dot.className = 'lens-dot';
-  const layer = document.createElement('div');
-  layer.className = 'lens-layer';
-  [ring, layer, dot].forEach(el => {
-    el.setAttribute('aria-hidden', 'true');
-    document.body.appendChild(el);
-  });
-
-  const targets = [...document.querySelectorAll('[data-lens]')].map(el => {
-    const clone = el.cloneNode(true);
-    clone.removeAttribute('data-lens');
-    clone.removeAttribute('data-blur');
-    clone.removeAttribute('id');
-    clone.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
-    clone.classList.add('lens-clone');
-    clone.style.display = 'none';
-    layer.appendChild(clone);
-    return { el, clone, inHero: hero.contains(el), needsIn: el.hasAttribute('data-blur') };
-  });
-
-  root.classList.add('has-lens');
-
-  let mx = -999, my = -999;   // pointer
-  let lx = -999, ly = -999;   // lens (eased)
-  let visible = false;
-  let small = false;
-
-  window.addEventListener('pointermove', (e) => {
-    if (e.pointerType !== 'mouse') return;
-    mx = e.clientX; my = e.clientY;
-    if (!visible) {
-      lx = mx; ly = my;
-      visible = true;
-      ring.classList.add('is-visible');
-      dot.classList.add('is-visible');
-    }
-  }, { passive: true });
-
-  document.addEventListener('mouseleave', () => {
-    visible = false;
-    ring.classList.remove('is-visible');
-    dot.classList.remove('is-visible');
-  });
-
-  document.addEventListener('mouseover', (e) => {
-    small = !!e.target.closest('a, button, [tabindex]:not(#deck), .skills-list li');
-    ring.classList.toggle('is-small', small);
-  });
-
-  function frame() {
-    const ease = reduceMotion ? 1 : 0.18;
-    lx += (mx - lx) * ease;
-    ly += (my - ly) * ease;
-
-    ring.style.transform = `translate3d(${lx}px, ${ly}px, 0)`;
-    dot.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
-
-    const showGlass = visible && !small;
-    layer.style.clipPath = showGlass
-      ? `circle(${R - 1}px at ${lx}px ${ly}px)`
-      : 'circle(0px at -200px -200px)';
-
-    targets.forEach(t => {
-      const r = t.el.getBoundingClientRect();
-      const near = showGlass &&
-        lx > r.left - R && lx < r.right + R &&
-        ly > r.top - R && ly < r.bottom + R;
-      const ready = (!t.inHero || heroP < 0.02) && (!t.needsIn || t.el.classList.contains('in'));
-
-      if (near && ready) {
-        const s = t.clone.style;
-        s.display = '';
-        s.left = r.left + 'px';
-        s.top = r.top + 'px';
-        s.width = r.width + 'px';
-        s.transformOrigin = `${lx - r.left}px ${ly - r.top}px`;
-        s.transform = `scale(${ZOOM})`;
-      } else if (t.clone.style.display !== 'none') {
-        t.clone.style.display = 'none';
-      }
-    });
-
-    requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
-}
-
-// ============================================================
-// 5. Project deck — stacked cards, arrows, dots, keys, swipe
+// 4. Project deck — stacked cards, arrows, dots, keys, swipe
 // ============================================================
 const deck = document.getElementById('deck');
 if (deck) {
@@ -303,4 +214,138 @@ if (deck) {
   });
 
   render();
+}
+
+// ============================================================
+// 5. Glass lens cursor — magnifies the whole page.
+//    The nav, main and footer are cloned once into a fixed layer
+//    clipped to a circle at the pointer and scaled around it.
+//    A MutationObserver mirrors every class/attribute/text change
+//    (deck, transitions, hover, counters) onto the clone, so
+//    whatever sits under the lens is what you see, magnified,
+//    with red/cyan fringes. Runs last so all JS-built DOM exists.
+// ============================================================
+if (finePointer) {
+  const R = 60;          // lens radius, px
+  const ZOOM = 1.2;
+
+  const make = (cls) => {
+    const el = document.createElement('div');
+    el.className = cls;
+    el.setAttribute('aria-hidden', 'true');
+    return el;
+  };
+  const ring = make('lens-ring');
+  const dot = make('lens-dot');
+  const layer = make('lens-layer');
+  const pageShift = make('lens-shift');
+  const pageZoom = make('lens-zoom');
+  const navZoom = make('lens-zoom lens-zoom-nav');
+  layer.inert = true;
+  pageShift.appendChild(pageZoom);
+  layer.append(pageShift, navZoom);
+  document.body.append(ring, layer, dot);
+
+  // clone a source and record original → clone for every node
+  const map = new WeakMap();
+  const pair = (a, b) => {
+    map.set(a, b);
+    if (b.nodeType === 1) b.removeAttribute('id');
+    for (let i = 0; i < a.childNodes.length; i++) pair(a.childNodes[i], b.childNodes[i]);
+  };
+  const cloneInto = (src, parent) => {
+    const c = src.cloneNode(true);
+    pair(src, c);
+    parent.appendChild(c);
+  };
+  const sources = [document.querySelector('main'), document.querySelector('.footer')];
+  sources.forEach(src => cloneInto(src, pageZoom));
+  cloneInto(nav, navZoom);
+
+  const mo = new MutationObserver(records => {
+    records.forEach(r => {
+      if (r.type === 'attributes') {
+        const c = map.get(r.target);
+        if (!c || r.attributeName === 'id') return;
+        const v = r.target.getAttribute(r.attributeName);
+        v === null ? c.removeAttribute(r.attributeName) : c.setAttribute(r.attributeName, v);
+      } else if (r.type === 'characterData') {
+        const c = map.get(r.target);
+        if (c) c.data = r.target.data;
+      } else {                                   // childList: re-clone that subtree
+        const c = map.get(r.target);
+        if (!c) return;
+        const fresh = r.target.cloneNode(true);
+        pair(r.target, fresh);
+        c.replaceWith(fresh);
+      }
+    });
+  });
+  [...sources, nav].forEach(src => mo.observe(src, {
+    subtree: true, attributes: true, childList: true, characterData: true,
+  }));
+
+  root.classList.add('has-lens');
+
+  let mx = -999, my = -999;   // pointer
+  let lx = -999, ly = -999;   // lens (eased)
+  let visible = false;
+  let small = false;
+
+  window.addEventListener('pointermove', (e) => {
+    if (e.pointerType !== 'mouse') return;
+    mx = e.clientX; my = e.clientY;
+    if (!visible) {
+      lx = mx; ly = my;
+      visible = true;
+      ring.classList.add('is-visible');
+      dot.classList.add('is-visible');
+    }
+  }, { passive: true });
+
+  document.addEventListener('mouseleave', () => {
+    visible = false;
+    ring.classList.remove('is-visible');
+    dot.classList.remove('is-visible');
+  });
+
+  // :hover can't reach the clone, so mirror it as a class
+  let hovered = null;
+  document.addEventListener('mouseover', (e) => {
+    small = !!e.target.closest('a, button, [tabindex]:not(#deck), .skills-list li');
+    ring.classList.toggle('is-small', small);
+    const h = e.target.closest('.portrait, .swatch, .cred-row, .skills-list li');
+    if (h !== hovered) {
+      if (hovered) hovered.classList.remove('is-hover');
+      if (h) h.classList.add('is-hover');
+      hovered = h;
+    }
+  });
+
+  let shown = null;
+  function frame() {
+    const ease = reduceMotion ? 1 : 0.18;
+    lx += (mx - lx) * ease;
+    ly += (my - ly) * ease;
+
+    ring.style.transform = `translate3d(${lx}px, ${ly}px, 0)`;
+    dot.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
+
+    const show = visible && !small;
+    if (show !== shown) {
+      layer.style.visibility = show ? 'visible' : 'hidden';
+      shown = show;
+    }
+    if (show) {
+      const y = window.scrollY;
+      layer.style.clipPath = `circle(${R - 1}px at ${lx}px ${ly}px)`;
+      pageShift.style.transform = `translate3d(0, ${-y}px, 0)`;
+      pageZoom.style.transformOrigin = `${lx}px ${ly + y}px`;
+      pageZoom.style.transform = `scale(${ZOOM})`;
+      navZoom.style.transformOrigin = `${lx}px ${ly}px`;
+      navZoom.style.transform = `scale(${ZOOM})`;
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
 }

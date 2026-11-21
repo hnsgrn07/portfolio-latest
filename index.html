@@ -71,6 +71,14 @@
 
   <!-- ============ HERO ============ -->
   <section class="hero" id="top">
+    <!-- outlined name ticker that slides behind the cut-out portrait -->
+    <div class="hero-marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>Hans David Geron</span><span>Hans David Geron</span>
+        <span>Hans David Geron</span><span>Hans David Geron</span>
+      </div>
+    </div>
+
     <div class="wrap hero-grid">
 
       <aside class="rail" aria-hidden="true">
@@ -91,7 +99,7 @@
           </div>
         </div>
 
-        <h1 class="hello" data-lens>
+        <h1 class="hello">
           <span class="mask"><span class="hello-word" data-enter style="--d:.3s">Hello</span></span>
         </h1>
 
@@ -105,7 +113,7 @@
       </div>
 
       <figure class="portrait" data-enter style="--d:.2s">
-        <img src="assets/profile.jpg" alt="Portrait of Hans David Geron" width="900" height="1125"
+        <img src="assets/profile-cutout.webp" alt="Portrait of Hans David Geron" width="708" height="980" fetchpriority="high"
              onerror="this.closest('.portrait').classList.add('no-photo')">
         <span class="portrait-fallback" aria-hidden="true">HG</span>
       </figure>
@@ -118,10 +126,10 @@
     <span class="ghost-letters" aria-hidden="true">Hd</span>
 
     <div class="wrap">
-      <h2 class="display" data-lens data-blur>Hans David Geron</h2>
+      <h2 class="display">Hans David Geron</h2>
 
       <div class="about-body">
-        <h3 class="sub-display" data-blur>About me</h3>
+        <h3 class="sub-display">About me</h3>
         <div class="about-text">
           <p>I'm a 3rd-year Computer Science student at the University of the Cordilleras, studying under a
           DOST scholarship. Originally from Pangasinan, I moved to Baguio City for school and have spent the
@@ -133,7 +141,7 @@
       </div>
 
       <div class="snapshot-head">
-        <h2 class="display" data-blur>Snapshot</h2>
+        <h2 class="display">Snapshot</h2>
         <p>The short version: who funds the degree, where the evenings go, and what I'm getting
         good at right now.</p>
       </div>
@@ -176,7 +184,7 @@
     <div class="wrap work-grid">
 
       <div class="work-intro">
-        <h2 class="work-lede" data-blur>
+        <h2 class="work-lede">
           I'm Hans, I build <em class="serif">practical</em> tools that run in the terminal,
           the cloud and the browser
         </h2>
@@ -310,7 +318,7 @@ Total           <span class="t-hi">2,270.00</span><span class="caret"></span></p
   <section class="credentials" id="credentials">
     <div class="wrap">
       <div class="section-head">
-        <h2 class="display" data-blur>Credentials</h2>
+        <h2 class="display">Credentials</h2>
         <p>Certifications and coursework completed alongside my degree.</p>
       </div>
 
@@ -332,7 +340,7 @@ Total           <span class="t-hi">2,270.00</span><span class="caret"></span></p
   <section class="contact" id="contact">
     <div class="wrap contact-inner">
       <p class="contact-kicker">Open to internships, junior roles, and anything that lets me build something real.</p>
-      <h2 class="contact-title" data-lens data-blur>Let's <em class="serif">talk</em>.</h2>
+      <h2 class="contact-title">Let's <em class="serif">talk</em>.</h2>
       <a href="mailto:hansdavidgeron07@gmail.com" class="contact-email link-draw">hansdavidgeron07@gmail.com <span class="arrow" aria-hidden="true">↗</span></a>
       <div class="contact-links">
         <a href="https://github.com/hnsgrn07" target="_blank" rel="noopener" class="pill">GitHub <span aria-hidden="true">↗</span></a>
