@@ -1,158 +1,306 @@
 // ============================================================
-// 1. Hero load-in — triggers the line-reveal animation once the
-//    page is ready.
+// Shared flags
 // ============================================================
-window.addEventListener('DOMContentLoaded', () => {
-  const hero = document.querySelector('.hero');
-  requestAnimationFrame(() => hero.classList.add('loaded'));
+const root = document.documentElement;
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+// ============================================================
+// 0. Theme toggle — initial theme is set pre-paint in <head>
+// ============================================================
+const themeMeta = document.querySelector('meta[name="theme-color"]');
+const syncThemeMeta = () => {
+  if (themeMeta) themeMeta.content = root.dataset.theme === 'dark' ? '#0B0D12' : '#F8F8F8';
+};
+syncThemeMeta();
+
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  root.dataset.theme = next;
+  syncThemeMeta();
+  try { localStorage.setItem('theme', next); } catch (e) { /* storage blocked: theme just won't persist */ }
 });
 
 // ============================================================
-// 2. Theme toggle — switches data-theme on <html> and remembers
-//    the choice. The inline script in <head> sets the initial
-//    value before paint; this just handles the click + persistence.
+// 1. Hero entrance (once) + stat count-up
 // ============================================================
-const themeToggle = document.getElementById('themeToggle');
+requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add('is-loaded')));
 
-themeToggle.addEventListener('click', () => {
-  const root = document.documentElement;
-  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  root.setAttribute('data-theme', next);
-  localStorage.setItem('theme', next);
-});
+if (!reduceMotion) {
+  document.querySelectorAll('[data-count]').forEach(el => {
+    const target = parseInt(el.dataset.count, 10);
+    const start = performance.now() + 450;
+    const dur = 1300;
+    el.textContent = '0';
+    const tick = (now) => {
+      const t = Math.min(Math.max((now - start) / dur, 0), 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = Math.round(target * eased);
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+}
 
 // ============================================================
-// 3. Nav background on scroll + mobile dropdown menu
+// 2. Nav background + hero zoom/blur-out on scroll
 // ============================================================
 const nav = document.getElementById('nav');
-window.addEventListener('scroll', () => {
-  nav.classList.toggle('scrolled', window.scrollY > 40);
-}, { passive: true });
+const hero = document.querySelector('.hero');
+let heroP = 0;
 
-const burger = document.getElementById('navBurger');
-const dropdown = document.getElementById('navDropdown');
-
-burger.addEventListener('click', () => {
-  const isOpen = dropdown.classList.toggle('open');
-  burger.classList.toggle('open', isOpen);
-  burger.setAttribute('aria-expanded', String(isOpen));
-});
-
-dropdown.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', () => {
-    dropdown.classList.remove('open');
-    burger.classList.remove('open');
-    burger.setAttribute('aria-expanded', 'false');
-  });
-});
-
-// ============================================================
-// 4. Scroll reveal — fades elements IN as they enter the
-//    viewport and back OUT as they leave (either direction).
-//    Three flavors: .reveal (simple fade), .reveal-drop (children
-//    drop in staggered), .reveal-scale (children scale in staggered).
-// ============================================================
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-function setStaggerDelays(container, itemSelector, stepMs) {
-  const items = container.querySelectorAll(itemSelector);
-  items.forEach((item, i) => {
-    item.style.transitionDelay = `${i * stepMs}ms`;
-  });
-}
-
-document.querySelectorAll('.reveal-drop').forEach(el => setStaggerDelays(el, '.reveal-drop-item', 70));
-document.querySelectorAll('.reveal-scale').forEach(el => setStaggerDelays(el, '.reveal-scale-item', 90));
-
-if (prefersReducedMotion) {
-  document.querySelectorAll('.reveal, .reveal-drop-item, .reveal-scale-item').forEach(el => el.classList.add('in-view'));
-} else {
-  const toggleInView = (entries) => {
-    entries.forEach(entry => {
-      entry.target.classList.toggle('in-view', entry.isIntersecting);
-    });
-  };
-
-  const sectionObserver = new IntersectionObserver(toggleInView, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
-  document.querySelectorAll('.reveal').forEach(el => sectionObserver.observe(el));
-
-  const groupObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      const items = entry.target.querySelectorAll('.reveal-drop-item, .reveal-scale-item');
-      items.forEach(item => item.classList.toggle('in-view', entry.isIntersecting));
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-  document.querySelectorAll('.reveal-drop, .reveal-scale').forEach(el => groupObserver.observe(el));
-}
-
-// ============================================================
-// 5. Count-up numbers (impact stats) — runs once per element the
-//    first time it enters view.
-// ============================================================
-const countEls = document.querySelectorAll('[data-count]');
-
-function animateCount(el) {
-  const target = parseInt(el.dataset.count, 10);
-  const suffix = el.dataset.suffix || '';
-  const duration = 900;
-  const start = performance.now();
-
-  function tick(now) {
-    const progress = Math.min((now - start) / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    el.textContent = Math.round(eased * target) + suffix;
-    if (progress < 1) requestAnimationFrame(tick);
+function onScroll() {
+  const y = window.scrollY;
+  nav.classList.toggle('scrolled', y > 24);
+  if (!reduceMotion) {
+    heroP = Math.min(Math.max(y / (hero.offsetHeight * 0.85), 0), 1);
+    hero.style.setProperty('--p', heroP.toFixed(4));
   }
-  requestAnimationFrame(tick);
 }
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
 
-if (prefersReducedMotion) {
-  countEls.forEach(el => { el.textContent = el.dataset.count + (el.dataset.suffix || ''); });
-} else {
-  const countObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        animateCount(entry.target);
-        countObserver.unobserve(entry.target);
+// ============================================================
+// 3. Blur-in headings — split words, resolve once in view
+// ============================================================
+function splitWords(el) {
+  let i = 0;
+  const walk = (node) => {
+    [...node.childNodes].forEach(child => {
+      if (child.nodeType === Node.TEXT_NODE) {
+        const frag = document.createDocumentFragment();
+        child.textContent.split(/(\s+)/).forEach(part => {
+          if (!part) return;
+          if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+          const span = document.createElement('span');
+          span.className = 'w';
+          span.style.setProperty('--i', i++);
+          span.textContent = part;
+          frag.appendChild(span);
+        });
+        child.replaceWith(frag);
+      } else if (child.nodeType === Node.ELEMENT_NODE) {
+        walk(child);
       }
     });
-  }, { threshold: 0.4 });
-  countEls.forEach(el => countObserver.observe(el));
+  };
+  walk(el);
+}
+
+const blurEls = document.querySelectorAll('[data-blur]');
+blurEls.forEach(splitWords);
+
+if (reduceMotion || !('IntersectionObserver' in window)) {
+  blurEls.forEach(el => el.classList.add('in'));
+} else {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.35 });
+  blurEls.forEach(el => io.observe(el));
 }
 
 // ============================================================
-// 6. Skill bar fill — widths animate to their data-fill value
-//    the first time the skills block scrolls into view.
+// 4. Glass lens cursor
+//    A circle follows the pointer with a little lag. Big type marked
+//    [data-lens] is cloned into a fixed layer that is clipped to the
+//    circle and scaled around the pointer, with red/cyan fringes,
+//    so the lens reads as real glass magnifying the headline.
+//    It only moves with the pointer, so it stays on under reduced
+//    motion — just without the trailing lag.
 // ============================================================
-const skillBars = document.querySelector('.skill-bars');
+if (finePointer) {
+  const R = 60;          // lens radius in px
+  const ZOOM = 1.2;
 
-if (skillBars) {
-  if (prefersReducedMotion) {
-    skillBars.querySelectorAll('.skill-fill').forEach(el => { el.style.width = el.dataset.fill + '%'; });
-  } else {
-    const skillObserver = new IntersectionObserver((entries, obs) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.querySelectorAll('.skill-fill').forEach(bar => { bar.style.width = bar.dataset.fill + '%'; });
-          obs.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.3 });
-    skillObserver.observe(skillBars);
+  const ring = document.createElement('div');
+  ring.className = 'lens-ring';
+  const dot = document.createElement('div');
+  dot.className = 'lens-dot';
+  const layer = document.createElement('div');
+  layer.className = 'lens-layer';
+  [ring, layer, dot].forEach(el => {
+    el.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(el);
+  });
+
+  const targets = [...document.querySelectorAll('[data-lens]')].map(el => {
+    const clone = el.cloneNode(true);
+    clone.removeAttribute('data-lens');
+    clone.removeAttribute('data-blur');
+    clone.removeAttribute('id');
+    clone.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
+    clone.classList.add('lens-clone');
+    clone.style.display = 'none';
+    layer.appendChild(clone);
+    return { el, clone, inHero: hero.contains(el), needsIn: el.hasAttribute('data-blur') };
+  });
+
+  root.classList.add('has-lens');
+
+  let mx = -999, my = -999;   // pointer
+  let lx = -999, ly = -999;   // lens (eased)
+  let visible = false;
+  let small = false;
+
+  window.addEventListener('pointermove', (e) => {
+    if (e.pointerType !== 'mouse') return;
+    mx = e.clientX; my = e.clientY;
+    if (!visible) {
+      lx = mx; ly = my;
+      visible = true;
+      ring.classList.add('is-visible');
+      dot.classList.add('is-visible');
+    }
+  }, { passive: true });
+
+  document.addEventListener('mouseleave', () => {
+    visible = false;
+    ring.classList.remove('is-visible');
+    dot.classList.remove('is-visible');
+  });
+
+  document.addEventListener('mouseover', (e) => {
+    small = !!e.target.closest('a, button, [tabindex]:not(#deck), .skills-list li');
+    ring.classList.toggle('is-small', small);
+  });
+
+  function frame() {
+    const ease = reduceMotion ? 1 : 0.18;
+    lx += (mx - lx) * ease;
+    ly += (my - ly) * ease;
+
+    ring.style.transform = `translate3d(${lx}px, ${ly}px, 0)`;
+    dot.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
+
+    const showGlass = visible && !small;
+    layer.style.clipPath = showGlass
+      ? `circle(${R - 1}px at ${lx}px ${ly}px)`
+      : 'circle(0px at -200px -200px)';
+
+    targets.forEach(t => {
+      const r = t.el.getBoundingClientRect();
+      const near = showGlass &&
+        lx > r.left - R && lx < r.right + R &&
+        ly > r.top - R && ly < r.bottom + R;
+      const ready = (!t.inHero || heroP < 0.02) && (!t.needsIn || t.el.classList.contains('in'));
+
+      if (near && ready) {
+        const s = t.clone.style;
+        s.display = '';
+        s.left = r.left + 'px';
+        s.top = r.top + 'px';
+        s.width = r.width + 'px';
+        s.transformOrigin = `${lx - r.left}px ${ly - r.top}px`;
+        s.transform = `scale(${ZOOM})`;
+      } else if (t.clone.style.display !== 'none') {
+        t.clone.style.display = 'none';
+      }
+    });
+
+    requestAnimationFrame(frame);
   }
+  requestAnimationFrame(frame);
 }
 
 // ============================================================
-// 7. Hero photo — shows the placeholder box until a real photo
-//    is found at assets/photo.jpg (no broken-image icon).
+// 5. Project deck — stacked cards, arrows, dots, keys, swipe
 // ============================================================
-const heroPhoto = document.getElementById('heroPhoto');
-const photoFrame = heroPhoto.closest('.hero-photo-frame');
+const deck = document.getElementById('deck');
+if (deck) {
+  const cards = [...deck.querySelectorAll('.card')];
+  const dotsWrap = document.getElementById('deck-dots');
+  const currentEl = document.getElementById('deck-current');
+  const totalEl = document.getElementById('deck-total');
+  const pad = n => String(n).padStart(2, '0');
+  let order = cards.map((_, i) => i);   // order[slot] = card index
+  let busy = false;
 
-heroPhoto.addEventListener('load', () => {
-  if (heroPhoto.naturalWidth > 1) photoFrame.classList.add('has-photo');
-});
-heroPhoto.addEventListener('error', () => {
-  photoFrame.classList.remove('has-photo');
-});
+  totalEl.textContent = pad(cards.length);
+
+  const dots = cards.map((card, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('aria-label', `Show project ${i + 1}: ${card.querySelector('h3').textContent}`);
+    b.addEventListener('click', () => goTo(i));
+    dotsWrap.appendChild(b);
+    return b;
+  });
+
+  function render() {
+    order.forEach((cardIdx, slot) => {
+      const card = cards[cardIdx];
+      const s = Math.min(slot, 3);
+      card.dataset.slot = s;
+      card.style.setProperty('--slot', s);
+      const front = slot === 0;
+      card.inert = !front;
+      card.setAttribute('aria-hidden', String(!front));
+    });
+    currentEl.textContent = pad(order[0] + 1);
+    dots.forEach((d, i) => d.setAttribute('aria-current', String(i === order[0])));
+  }
+
+  const reflow = el => void el.offsetWidth;
+
+  function next() {
+    if (busy) return;
+    busy = true;
+    const leaving = cards[order[0]];
+    leaving.classList.add('is-leaving');
+    order.push(order.shift());
+    render();
+    setTimeout(() => {
+      leaving.classList.add('no-anim');
+      leaving.classList.remove('is-leaving');
+      reflow(leaving);
+      leaving.classList.remove('no-anim');
+      busy = false;
+    }, reduceMotion ? 0 : 460);
+  }
+
+  function prev() {
+    if (busy) return;
+    busy = true;
+    const coming = cards[order[order.length - 1]];
+    order.unshift(order.pop());
+    coming.classList.add('no-anim', 'is-leaving');
+    reflow(coming);
+    coming.classList.remove('no-anim');
+    render();
+    requestAnimationFrame(() => {
+      coming.classList.remove('is-leaving');
+      setTimeout(() => { busy = false; }, reduceMotion ? 0 : 500);
+    });
+  }
+
+  function goTo(i) {
+    if (i === order[0] || busy) return;
+    const at = order.indexOf(i);
+    order = order.slice(at).concat(order.slice(0, at));
+    render();
+  }
+
+  document.querySelectorAll('[data-deck="next"]').forEach(b => b.addEventListener('click', next));
+  document.querySelectorAll('[data-deck="prev"]').forEach(b => b.addEventListener('click', prev));
+
+  deck.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+  });
+
+  let startX = null;
+  deck.addEventListener('pointerdown', e => { startX = e.clientX; });
+  deck.addEventListener('pointerup', e => {
+    if (startX === null) return;
+    const dx = e.clientX - startX;
+    startX = null;
+    if (Math.abs(dx) > 40) (dx < 0 ? next : prev)();
+  });
+
+  render();
+}

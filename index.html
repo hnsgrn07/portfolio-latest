@@ -4,348 +4,351 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hans David Geron — Computer Science Student</title>
-<meta name="description" content="Portfolio of Hans David Geron, BS Computer Science student at University of the Cordilleras.">
-
-<!-- Sets the theme BEFORE first paint so there's no flash of the wrong
-     color scheme. Reads a saved choice first, falls back to the
-     system preference. -->
-<script>
-  (function () {
-    var saved = localStorage.getItem('theme');
-    var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    document.documentElement.setAttribute('data-theme', theme);
-  })();
-</script>
+<meta name="description" content="Portfolio of Hans David Geron, BS Computer Science student at the University of the Cordilleras, building with Python, Java and AWS.">
+<meta property="og:title" content="Hans David Geron — Computer Science Student">
+<meta property="og:description" content="3rd-year CS student in Baguio City, building with Python, Java and AWS.">
+<meta property="og:image" content="assets/profile.jpg">
+<meta name="theme-color" content="#F8F8F8">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="styles.css">
+
+<!-- Set theme before paint to avoid a flash of the wrong theme -->
+<script>
+  (function () {
+    var theme = 'light';
+    try {
+      var forced = new URLSearchParams(location.search).get('theme');
+      theme = (forced === 'light' || forced === 'dark') ? forced : localStorage.getItem('theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    } catch (e) {}
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
 </head>
 <body>
 
-<div class="grain"></div>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- Drifting blurred gradient ground + film grain -->
+<div class="ground" aria-hidden="true">
+  <span class="blob blob-1"></span>
+  <span class="blob blob-2"></span>
+  <span class="blob blob-3"></span>
+</div>
+<div class="grain" aria-hidden="true"></div>
 
 <header class="nav" id="nav">
-  <div class="nav-inner">
-    <a href="#top" class="nav-mark">HDG</a>
-
-    <nav class="nav-links">
-      <a href="#work">Work</a>
-      <a href="#about">About</a>
-      <a href="#credentials">Credentials</a>
-      <a href="#contact">Contact</a>
-    </nav>
+  <div class="wrap nav-inner">
+    <div class="nav-left">
+      <a href="#top" class="nav-mark" aria-label="Hans David Geron, back to top">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+          <path d="M3 3h5v8h10V3h5v20h-5v-7H8v7H3z" fill="currentColor"/>
+        </svg>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#about">About me</a>
+        <a href="#work">Work</a>
+        <a href="#credentials">Credentials</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
 
     <div class="nav-right">
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
-        <svg class="icon-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-        <svg class="icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark and light mode">
+        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"/></svg>
+        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg>
       </button>
-
-      <button class="nav-burger" id="navBurger" aria-label="Open menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
+      <a href="#contact" class="nav-cta link-draw">Get in touch <span class="arrow" aria-hidden="true">↗</span></a>
     </div>
-  </div>
-
-  <div class="nav-dropdown" id="navDropdown">
-    <a href="#work">Work</a>
-    <a href="#about">About</a>
-    <a href="#credentials">Credentials</a>
-    <a href="#contact">Contact</a>
   </div>
 </header>
 
-<main>
+<main id="main">
 
-  <!-- HERO / MASTHEAD -->
+  <!-- ============ HERO ============ -->
   <section class="hero" id="top">
+    <div class="wrap hero-grid">
 
-    <div class="hero-masthead" id="masthead">
-      <p class="masthead-eyebrow">Computer Science Student<br>University of the Cordilleras</p>
-      <p class="masthead-mark">HG</p>
-      <p class="masthead-year">Portfolio<br>2026</p>
-    </div>
+      <aside class="rail" aria-hidden="true">
+        <span class="rail-text">Computer Science student</span>
+        <span class="rail-line"></span>
+        <span class="rail-text">2026</span>
+      </aside>
 
-    <div class="hero-grid">
-      <div class="hero-text">
-        <h1 class="hero-title">
-          <span class="reveal-line"><span>HANS DAVID</span></span>
-          <span class="reveal-line"><span>GERON</span></span>
+      <div class="hero-copy" id="hero-copy">
+        <div class="stats" data-enter style="--d:.15s">
+          <div class="stat">
+            <p class="stat-num"><sup>+</sup><span data-count="9">9</span></p>
+            <p class="stat-label">Certifications &amp; seminars</p>
+          </div>
+          <div class="stat">
+            <p class="stat-num"><span data-count="3">3</span><sup>rd</sup></p>
+            <p class="stat-label">Year, BS Computer Science</p>
+          </div>
+        </div>
+
+        <h1 class="hello" data-lens>
+          <span class="mask"><span class="hello-word" data-enter style="--d:.3s">Hello</span></span>
         </h1>
-        <p class="hero-role reveal-line"><span>BS Computer Science — 3rd Year</span></p>
-        <div class="hero-rule reveal-line"><span></span></div>
-        <p class="hero-sub reveal-line"><span>I build small, functional software — from course projects in
-        Python and Java to automation work for a student developer guild.</span></p>
-        <div class="hero-actions reveal-line">
-          <span>
-            <a href="#work" class="link-arrow">View selected work <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-            <a href="https://github.com/hnsgrn07" target="_blank" rel="noopener" class="link-arrow">GitHub <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-          </span>
-        </div>
+
+        <p class="hello-sub" data-enter style="--d:.55s">
+          — It's Hans David, a CS student who builds with <em class="serif">Python, Java</em> &amp; AWS
+        </p>
+
+        <a href="#about" class="scroll-down link-draw" data-enter style="--d:.75s">
+          Scroll down <span class="arrow-down" aria-hidden="true">↓</span>
+        </a>
       </div>
 
-      <div class="hero-visual">
-        <div class="hero-circle" aria-hidden="true"></div>
-        <div class="hero-photo-frame">
-          <!-- Replace assets/photo.jpg with your own photo. Until it's
-               there, a placeholder circle shows instead of a broken image. -->
-          <img src="assets/photo.jpg" alt="Hans David Geron" id="heroPhoto">
-          <div class="photo-placeholder" id="photoPlaceholder">
-            <p>Add your photo</p>
-            <span>assets/photo.jpg</span>
-          </div>
-        </div>
-      </div>
+      <figure class="portrait" data-enter style="--d:.2s">
+        <img src="assets/profile.jpg" alt="Portrait of Hans David Geron" width="900" height="1125"
+             onerror="this.closest('.portrait').classList.add('no-photo')">
+        <span class="portrait-fallback" aria-hidden="true">HG</span>
+      </figure>
+
     </div>
   </section>
 
-  <!-- ABOUT -->
+  <!-- ============ ABOUT ============ -->
   <section class="about" id="about">
-    <div class="section-label reveal"><p>About</p></div>
+    <span class="ghost-letters" aria-hidden="true">Hd</span>
 
-    <div class="about-grid">
-      <h2 class="about-heading reveal">Studying computer science.<br>Building things along the way.</h2>
-      <div class="about-text reveal">
-        <p>I'm a 3rd-year Computer Science student at the University of the Cordilleras, studying under a
-        DOST scholarship. Originally from Pangasinan, I moved to Baguio City for school and have spent the
-        last two years writing code, breaking it, and figuring out why.</p>
-        <p>Outside of coursework, I serve as the <strong>Relations and Communications Officer</strong> for the
-        AWS Student Builder Group – Jaguars, where I handle speaker outreach, member communications, and
-        event coordination for the guild.</p>
+    <div class="wrap">
+      <h2 class="display" data-lens data-blur>Hans David Geron</h2>
+
+      <div class="about-body">
+        <h3 class="sub-display" data-blur>About me</h3>
+        <div class="about-text">
+          <p>I'm a 3rd-year Computer Science student at the University of the Cordilleras, studying under a
+          DOST scholarship. Originally from Pangasinan, I moved to Baguio City for school and have spent the
+          last two years writing code, breaking it, and figuring out why.</p>
+          <p>Outside of coursework, I serve as the Relations and Communications Officer for the
+          AWS Student Builder Group – Jaguars, where I handle speaker outreach, member communications, and
+          event coordination for the guild.</p>
+        </div>
+      </div>
+
+      <div class="snapshot-head">
+        <h2 class="display" data-blur>Snapshot</h2>
+        <p>The short version: who funds the degree, where the evenings go, and what I'm getting
+        good at right now.</p>
+      </div>
+
+      <div class="swatches">
+        <article class="swatch swatch-1">
+          <p class="swatch-label">Focus</p>
+          <p class="swatch-value">Python, Java &amp; cloud automation</p>
+        </article>
+        <article class="swatch swatch-2">
+          <p class="swatch-label">Scholarship</p>
+          <p class="swatch-value">DOST-SEI science scholar</p>
+        </article>
+        <article class="swatch swatch-3">
+          <p class="swatch-label">Guild role</p>
+          <p class="swatch-value">Relations &amp; Comms Officer, AWS SBG – Jaguars</p>
+        </article>
+        <article class="swatch swatch-4">
+          <p class="swatch-label">Based in</p>
+          <p class="swatch-value">Baguio City, from Pangasinan</p>
+        </article>
+      </div>
+
+      <div class="skills">
+        <p class="skills-label">Currently working with</p>
+        <ul class="skills-list">
+          <li>Python</li>
+          <li>Java</li>
+          <li>AWS / Cloud Computing</li>
+          <li>Data Structures</li>
+          <li>Web Development</li>
+          <li>Git &amp; GitHub</li>
+        </ul>
       </div>
     </div>
   </section>
 
-  <!-- SKILLS & IMPACT -->
-  <section class="capabilities" id="capabilities">
-    <div class="capabilities-grid">
-
-      <div class="skills-col">
-        <div class="section-label reveal"><p>Skills &amp; Toolkit</p></div>
-        <!-- Self-rated starting values — adjust these to how you'd
-             actually rate yourself before publishing. -->
-        <div class="skill-bars reveal-drop">
-          <div class="skill-row reveal-drop-item">
-            <div class="skill-row-top"><p>Python</p><span>85%</span></div>
-            <div class="skill-track"><div class="skill-fill" data-fill="85"></div></div>
-          </div>
-          <div class="skill-row reveal-drop-item">
-            <div class="skill-row-top"><p>Java</p><span>75%</span></div>
-            <div class="skill-track"><div class="skill-fill" data-fill="75"></div></div>
-          </div>
-          <div class="skill-row reveal-drop-item">
-            <div class="skill-row-top"><p>AWS / Cloud Computing</p><span>65%</span></div>
-            <div class="skill-track"><div class="skill-fill" data-fill="65"></div></div>
-          </div>
-          <div class="skill-row reveal-drop-item">
-            <div class="skill-row-top"><p>Web Development</p><span>70%</span></div>
-            <div class="skill-track"><div class="skill-fill" data-fill="70"></div></div>
-          </div>
-          <div class="skill-row reveal-drop-item">
-            <div class="skill-row-top"><p>Data Structures</p><span>70%</span></div>
-            <div class="skill-track"><div class="skill-fill" data-fill="70"></div></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="impact-col">
-        <div class="section-label reveal"><p>Impact &amp; Experience</p></div>
-        <div class="impact-stats reveal">
-          <div class="impact-stat">
-            <p class="impact-num" data-count="3" data-suffix="rd">0</p>
-            <p class="impact-label">Year, BS CS</p>
-          </div>
-          <div class="impact-stat">
-            <p class="impact-num" data-count="9">0</p>
-            <p class="impact-label">Certifications &amp; seminars</p>
-          </div>
-          <div class="impact-stat">
-            <p class="impact-num" data-count="2">0</p>
-            <p class="impact-label">Core languages</p>
-          </div>
-        </div>
-
-        <div class="motto-box reveal">
-          <p>Still learning the fundamentals. Still shipping real projects.</p>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- WHERE I FOCUS -->
-  <section class="focus" id="focus">
-    <div class="section-label reveal"><p>Where I Focus</p></div>
-
-    <div class="focus-list reveal-drop">
-      <div class="focus-row reveal-drop-item">
-        <p class="focus-num">01</p>
-        <h3>Scripting &amp; Automation</h3>
-        <p class="focus-desc">Python for CLI tools, data handling, and small automations.</p>
-      </div>
-      <div class="focus-row reveal-drop-item">
-        <p class="focus-num">02</p>
-        <h3>Object-Oriented Development</h3>
-        <p class="focus-desc">Java for structured, class-based projects — games included.</p>
-      </div>
-      <div class="focus-row reveal-drop-item">
-        <p class="focus-num">03</p>
-        <h3>Cloud &amp; Automation</h3>
-        <p class="focus-desc">AWS basics, used to automate real tasks for the student guild.</p>
-      </div>
-      <div class="focus-row reveal-drop-item">
-        <p class="focus-num">04</p>
-        <h3>Web Development</h3>
-        <p class="focus-desc">HTML, CSS, and JavaScript — including the site you're on.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- SELECTED WORK -->
+  <!-- ============ WORK ============ -->
   <section class="work" id="work">
-    <div class="section-label reveal"><p>Selected Work</p></div>
-    <p class="work-intro reveal">A few things I've built, from class projects to guild automation.</p>
+    <div class="wrap work-grid">
 
-    <div class="project-grid reveal-scale">
+      <div class="work-intro">
+        <h2 class="work-lede" data-blur>
+          I'm Hans, I build <em class="serif">practical</em> tools that run in the terminal,
+          the cloud and the browser
+        </h2>
+        <p class="work-note">Selected work — class projects to guild automation.</p>
 
-      <article class="project-card reveal-scale-item">
-        <div class="project-thumb" data-tag="JV">
-          <p class="project-num">01</p>
+        <div class="deck-controls">
+          <button class="deck-btn" type="button" data-deck="prev" aria-label="Previous project">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+          </button>
+          <p class="deck-count"><span id="deck-current">01</span> / <span id="deck-total">04</span></p>
+          <button class="deck-btn" type="button" data-deck="next" aria-label="Next project">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
         </div>
-        <h3>Solo Leveling RPG</h3>
-        <p class="project-cat">Java — Console Game</p>
-        <a href="https://github.com/hnsgrn07/SoloLevelingRPG-Java" target="_blank" rel="noopener" class="link-arrow link-arrow-small">
-          View repository <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
-      </article>
+      </div>
 
-      <article class="project-card reveal-scale-item">
-        <div class="project-thumb" data-tag="PY">
-          <p class="project-num">02</p>
-        </div>
-        <h3>Expense Tracker</h3>
-        <p class="project-cat">Python — CLI Tool</p>
-        <a href="https://github.com/hnsgrn07/ExpenseTracker" target="_blank" rel="noopener" class="link-arrow link-arrow-small">
-          View repository <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
-      </article>
+      <div class="deck-wrap">
+        <div class="deck" id="deck" tabindex="0" aria-roledescription="carousel" aria-label="Projects — use the arrow keys to browse">
 
-      <article class="project-card reveal-scale-item">
-        <div class="project-thumb" data-tag="AWS">
-          <p class="project-num">03</p>
-        </div>
-        <h3>SBG RSVP Automation</h3>
-        <p class="project-cat">AWS — Guild Automation</p>
-        <a href="https://github.com/hnsgrn07/sbg-rsvp-automation" target="_blank" rel="noopener" class="link-arrow link-arrow-small">
-          View repository <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
-      </article>
+          <article class="card" aria-roledescription="slide" aria-label="1 of 4">
+            <header class="card-head">
+              <span class="card-index">01</span>
+              <h3>Solo Leveling RPG</h3>
+              <span class="card-rule"></span>
+              <span class="card-tag">Java</span>
+            </header>
+            <div class="card-visual">
+              <pre class="term"><span class="t-dim">$ java Main</span>
+<span class="t-hi">Hunter</span> Jin-Woo   LV 12   HP <span class="t-hi">82</span>/100
+A <span class="t-hi">Goblin</span> appears from the gate!
+[1] Attack   [2] Skill   [3] Flee
+<span class="t-dim">&gt;</span> 2
+Shadow strike hits for <span class="t-hi">34</span> damage.<span class="caret"></span></pre>
+            </div>
+            <div class="card-foot">
+              <p>A console battle game inspired by the Solo Leveling manhwa — turn-based combat, leveling
+              and a text UI built from scratch as a 1st-year class project.</p>
+              <a href="https://github.com/hnsgrn07/SoloLevelingRPG-Java" target="_blank" rel="noopener" class="card-link" aria-label="View the Solo Leveling RPG repository on GitHub">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </article>
 
-      <article class="project-card reveal-scale-item">
-        <div class="project-thumb" data-tag="WEB">
-          <p class="project-num">04</p>
+          <article class="card" aria-roledescription="slide" aria-label="2 of 4">
+            <header class="card-head">
+              <span class="card-index">02</span>
+              <h3>Expense Tracker</h3>
+              <span class="card-rule"></span>
+              <span class="card-tag">Python</span>
+            </header>
+            <div class="card-visual">
+              <pre class="term"><span class="t-dim">$ python tracker.py summary</span>
+Category        Total
+Food            <span class="t-hi">1,240.00</span>
+Transport         380.00
+Books             650.00
+<span class="t-dim">──────────────────────</span>
+Total           <span class="t-hi">2,270.00</span><span class="caret"></span></pre>
+            </div>
+            <div class="card-foot">
+              <p>A command-line expense tracker. Logs transactions, categorizes spending and reads back
+              summaries straight from the terminal — no interface overhead, just the data.</p>
+              <a href="https://github.com/hnsgrn07/ExpenseTracker" target="_blank" rel="noopener" class="card-link" aria-label="View the Expense Tracker repository on GitHub">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </article>
+
+          <article class="card" aria-roledescription="slide" aria-label="3 of 4">
+            <header class="card-head">
+              <span class="card-index">03</span>
+              <h3>SBG RSVP Automation</h3>
+              <span class="card-rule"></span>
+              <span class="card-tag">AWS</span>
+            </header>
+            <div class="card-visual">
+              <div class="flow">
+                <span class="node">RSVP form</span>
+                <span class="wire"><i></i></span>
+                <span class="node node-main">AWS automation</span>
+                <span class="wire"><i></i></span>
+                <div class="node-stack">
+                  <span class="node">Attendee list</span>
+                  <span class="node">Confirmation</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-foot">
+              <p>An AWS-based tool that handles event RSVPs for the Student Builder Group — part of the
+              guild infrastructure I help run as Relations and Communications Officer.</p>
+              <a href="https://github.com/hnsgrn07/sbg-rsvp-automation" target="_blank" rel="noopener" class="card-link" aria-label="View the SBG RSVP Automation repository on GitHub">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </article>
+
+          <article class="card" aria-roledescription="slide" aria-label="4 of 4">
+            <header class="card-head">
+              <span class="card-index">04</span>
+              <h3>This portfolio</h3>
+              <span class="card-rule"></span>
+              <span class="card-tag">HTML / CSS / JS</span>
+            </header>
+            <div class="card-visual">
+              <div class="mini-browser">
+                <div class="mini-bar"><i></i><i></i><i></i></div>
+                <div class="mini-page">
+                  <span class="mini-hello">Hello</span>
+                  <span class="mini-lens"></span>
+                </div>
+              </div>
+            </div>
+            <div class="card-foot">
+              <p>The site you're on — hand-written HTML, CSS and vanilla JavaScript. No frameworks, no
+              templates, including the glass lens following your cursor.</p>
+              <a href="#top" class="card-link" aria-label="Back to the top of this portfolio">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 13V3M3.5 7.5L8 3l4.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </article>
+
         </div>
-        <h3>This Portfolio</h3>
-        <p class="project-cat">HTML / CSS / JS — Web Design</p>
-        <span class="link-arrow link-arrow-small link-arrow-static">You're on it</span>
-      </article>
+
+        <div class="deck-dots" id="deck-dots" role="group" aria-label="Choose a project"></div>
+      </div>
 
     </div>
   </section>
 
-  <!-- CREDENTIALS -->
+  <!-- ============ CREDENTIALS ============ -->
   <section class="credentials" id="credentials">
-    <div class="section-label reveal"><p>Credentials</p></div>
-    <p class="work-intro reveal">Certifications and coursework completed alongside my degree.</p>
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="display" data-blur>Credentials</h2>
+        <p>Certifications and coursework completed alongside my degree.</p>
+      </div>
 
-    <div class="cred-list reveal-drop">
-      <div class="cred-row reveal-drop-item">
-        <p class="cred-name">Python Developer Associate</p>
-        <p class="cred-issuer">DataCamp</p>
-        <p class="cred-date">Sep 2026</p>
-      </div>
-      <div class="cred-row reveal-drop-item">
-        <p class="cred-name">Introduction to Python</p>
-        <p class="cred-issuer">DataCamp</p>
-        <p class="cred-date">Sep 2026</p>
-      </div>
-      <div class="cred-row reveal-drop-item">
-        <p class="cred-name">Introduction to Cloud 101</p>
-        <p class="cred-issuer">AWS Educate</p>
-        <p class="cred-date">May 2026</p>
-      </div>
-      <div class="cred-row reveal-drop-item">
-        <p class="cred-name">AI Fundamentals with IBM SkillsBuild</p>
-        <p class="cred-issuer">Cisco</p>
-        <p class="cred-date">May 2026</p>
-      </div>
-      <div class="cred-row reveal-drop-item">
-        <p class="cred-name">Practical App Development: Concept to Code to Reality</p>
-        <p class="cred-issuer">University of the Cordilleras — CITCS</p>
-        <p class="cred-date">Mar 2026</p>
-      </div>
-      <div class="cred-row reveal-drop-item">
-        <p class="cred-name">AI &amp; Machine Learning — Powering Intelligent Systems</p>
-        <p class="cred-issuer">University of the Cordilleras — CITCS</p>
-        <p class="cred-date">Mar 2026</p>
-      </div>
-      <div class="cred-row reveal-drop-item">
-        <p class="cred-name">Introduction to Modern AI</p>
-        <p class="cred-issuer">Cisco</p>
-        <p class="cred-date">Jan 2026</p>
-      </div>
-      <div class="cred-row reveal-drop-item">
-        <p class="cred-name">Cultural Intelligence and Adaptation: Thriving in a Globalized World</p>
-        <p class="cred-issuer">University of the Cordilleras</p>
-        <p class="cred-date">Mar 2025</p>
-      </div>
-      <div class="cred-row reveal-drop-item">
-        <p class="cred-name">Scholars' Values Formation Orientation</p>
-        <p class="cred-issuer">DOST — Science Education Institute</p>
-        <p class="cred-date">Feb 2025</p>
-      </div>
+      <ol class="cred-list">
+        <li class="cred-row"><span class="cred-name">Python Developer Associate</span><span class="cred-issuer">DataCamp</span><span class="cred-date">Sep 2026</span></li>
+        <li class="cred-row"><span class="cred-name">Introduction to Python</span><span class="cred-issuer">DataCamp</span><span class="cred-date">Sep 2026</span></li>
+        <li class="cred-row"><span class="cred-name">AWS Educate Introduction to Cloud 101</span><span class="cred-issuer">Amazon Web Services</span><span class="cred-date">May 2026</span></li>
+        <li class="cred-row"><span class="cred-name">AI Fundamentals with IBM SkillsBuild</span><span class="cred-issuer">Cisco</span><span class="cred-date">May 2026</span></li>
+        <li class="cred-row"><span class="cred-name">Practical App Development: Concept to Code to Reality</span><span class="cred-issuer">University of the Cordilleras — CITCS</span><span class="cred-date">Mar 2026</span></li>
+        <li class="cred-row"><span class="cred-name">AI &amp; Machine Learning — Powering Intelligent Systems</span><span class="cred-issuer">University of the Cordilleras — CITCS</span><span class="cred-date">Mar 2026</span></li>
+        <li class="cred-row"><span class="cred-name">Introduction to Modern AI</span><span class="cred-issuer">Cisco</span><span class="cred-date">Jan 2026</span></li>
+        <li class="cred-row"><span class="cred-name">Cultural Intelligence and Adaptation: Thriving in a Globalized World</span><span class="cred-issuer">University of the Cordilleras</span><span class="cred-date">Mar 2025</span></li>
+        <li class="cred-row"><span class="cred-name">Scholars' Values Formation Orientation</span><span class="cred-issuer">DOST — Science Education Institute</span><span class="cred-date">Feb 2025</span></li>
+      </ol>
     </div>
   </section>
 
-  <!-- LET'S CONNECT -->
+  <!-- ============ CONTACT ============ -->
   <section class="contact" id="contact">
-    <div class="section-label reveal"><p>Let's Connect</p></div>
-
-    <div class="contact-grid reveal">
-      <div class="contact-info">
-        <div class="contact-row">
-          <p class="contact-row-label">Email</p>
-          <a href="mailto:hansdavidgeron07@gmail.com">hansdavidgeron07@gmail.com</a>
-        </div>
-        <div class="contact-row">
-          <p class="contact-row-label">GitHub</p>
-          <a href="https://github.com/hnsgrn07" target="_blank" rel="noopener">github.com/hnsgrn07</a>
-        </div>
-        <div class="contact-row">
-          <p class="contact-row-label">LinkedIn</p>
-          <a href="https://linkedin.com/in/hansgeron" target="_blank" rel="noopener">linkedin.com/in/hansgeron</a>
-        </div>
-        <div class="contact-row">
-          <p class="contact-row-label">Location</p>
-          <p>Baguio City, Philippines</p>
-        </div>
+    <div class="wrap contact-inner">
+      <p class="contact-kicker">Open to internships, junior roles, and anything that lets me build something real.</p>
+      <h2 class="contact-title" data-lens data-blur>Let's <em class="serif">talk</em>.</h2>
+      <a href="mailto:hansdavidgeron07@gmail.com" class="contact-email link-draw">hansdavidgeron07@gmail.com <span class="arrow" aria-hidden="true">↗</span></a>
+      <div class="contact-links">
+        <a href="https://github.com/hnsgrn07" target="_blank" rel="noopener" class="pill">GitHub <span aria-hidden="true">↗</span></a>
+        <a href="https://linkedin.com/in/hansgeron" target="_blank" rel="noopener" class="pill">LinkedIn <span aria-hidden="true">↗</span></a>
       </div>
-
-      <a href="mailto:hansdavidgeron07@gmail.com" class="contact-cta">
-        <p>Open to internships and<br>junior developer roles</p>
-        <svg width="22" height="22" viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
     </div>
   </section>
 
 </main>
 
 <footer class="footer">
-  <p>Hans David Geron © 2026</p>
-  <p>Built with HTML, CSS &amp; JavaScript</p>
+  <div class="wrap footer-inner">
+    <p>Hans David Geron © 2026</p>
+    <p>Baguio City, Philippines</p>
+    <p>Built with HTML, CSS &amp; JavaScript</p>
+  </div>
 </footer>
 
 <script src="script.js"></script>
